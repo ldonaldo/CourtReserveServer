@@ -23,7 +23,7 @@ class AdminService extends EventEmiter {
       const isValid = await bcrypt.compare(password, admin.password || "" )
       if(Object.keys(admin).length === 0 || !isValid) throw Error("The email or password is incorrect")
       const token = await admin.generateAuthToken()
-      await admin.updateOne({tokens: [...admin.tokens, token]})
+      const updatedResult = await Admin.updateOne({_id: admin._id},{tokens: [token]})
       res.status(200).json({token})
     } catch(err){
       console.log(err)
@@ -35,7 +35,7 @@ class AdminService extends EventEmiter {
       const {token} = req.body
       console.log(token)
       const admin = await Admin.findOne({tokens: {$in: [token]}}) || {}
-      const updatedResult = await admin.updateOne({tokens: []})
+      const updatedResult = await Admin.updateOne({_id: admin._id},{tokens: []})
       res.status(200).json({updatedResult})
     } catch(err){
       console.log(err)

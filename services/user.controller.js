@@ -23,7 +23,7 @@ class UserService extends EventEmiter {
       const isValid = await bcrypt.compare(password, user.password || "" )
       if(Object.keys(user).length === 0 || !isValid) throw Error("the email or password is incorrect")
       const token = await user.generateAuthToken()
-      await user.updateOne({tokens: [...user.tokens, token]})
+      const updatedResult = await User.updateOne({_id: user._id},{tokens: [token]})
       //this.emit("lenderLoged")
       res.status(200).json({token})
     } catch(err){
@@ -34,9 +34,9 @@ class UserService extends EventEmiter {
   logoutUser = async (req,res) => {    
     try{
       const {token} = req.body
+      console.log(token)
       const user = await User.findOne({tokens: {$in: [token]}}) || {}
-      if(Object.keys(user).length === 0 ) throw Error("the token is not found")
-      const updatedResult = await user.updateOne({tokens: []})
+      const updatedResult = await User.updateOne({_id: user._id},{tokens: []})
       res.status(200).json({updatedResult})
     } catch(err){
       console.log(err)

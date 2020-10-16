@@ -5,6 +5,9 @@ const helmet = require("helmet")
 const morgan = require("morgan")
 const userRouter = require("./routes/user.route")
 const adminRouter = require("./routes/admin.route")
+const courtRouter = require("./routes/court.route")
+const reservationRouter = require("./routes/reservation.route")
+const paymentRouter = require("./routes/payment.route")
 
 const db = require("./config/dbConnection")
 db() 
@@ -17,5 +20,8 @@ app.use(helmet())
 
 app.use("/user", userRouter)
 app.use("/admin", adminRouter)
+app.use("/court", courtRouter)
+app.use("/reservation", reservationRouter)
+app.use("/payment", paymentRouter)
 
 module.exports = app

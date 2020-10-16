@@ -36,7 +36,10 @@ const userSchema = new Schema ({
   ],  
   profilePhoto: {
       type: String
-  }
+  },
+  reservations:{
+    type: [{type: Schema.Types.ObjectId, ref:"Reservation"}]
+  },
 },{
   timestamps: true
 })

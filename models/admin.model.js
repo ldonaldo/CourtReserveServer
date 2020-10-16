@@ -35,7 +35,10 @@ const adminSchema = new Schema ({
   ],  
   profilePhoto: {
       type: String
-  }
+  },
+  courts: {
+    type: [{type: Schema.Types.ObjectId, ref:"Court"}]
+  },
 },{
   timestamps: true
 })
