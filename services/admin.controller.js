@@ -1,5 +1,6 @@
 const EventEmiter = require("events")
 const Admin = require("../models/admin.model")
+const adminSubscription = require("../subscribers/admin.subscribers")
 const bcrypt = require("bcrypt");
 
 class AdminService extends EventEmiter {
@@ -33,7 +34,6 @@ class AdminService extends EventEmiter {
   logoutAdmin = async (req,res) => {    
     try{
       const {token} = req.body
-      console.log(token)
       const admin = await Admin.findOne({tokens: {$in: [token]}}) || {}
       const updatedResult = await Admin.updateOne({_id: admin._id},{tokens: []})
       res.status(200).json({updatedResult})
@@ -42,8 +42,37 @@ class AdminService extends EventEmiter {
       res.status(400).json(err.message)
     }
   }
+  getAdmin = async (req,res) => {
+    try {
+      const admin = req.person
+      res.status(200).json(admin)
+    } catch(err){
+      res.status(400).json(err.message)
+    }
+  }
+  updateAdmin = async (req,res) => {
+    try {
+      const { name, cellphone } = req.body;
+      const updated = await Admin.updateOne({_id: req.person._id},{name, cellphone})
+      res.status(200).json(updated)
+    } catch(err){
+      res.status(400).json(err.message)
+    }
+  }
+  deleteAdmin = async (req,res) => {
+    try {
+      const { _id, courts } = req.person ;
+      const deleted =  await Admin.deleteOne({_id})
+      this.emit("adminDeleted", courts) 
+      this.emit("courtDeleted", courts) 
+      res.status(200).json(deleted)
+    } catch(err){
+      res.status(400).json(err.message)
+    } 
+  }
 }
 
 const adminService = new AdminService()
-
+adminService.on("adminDeleted",adminSubscription.deleteCourtsFromAdmin)
+adminService.on("courtDeleted",adminSubscription.deleteReservationsFromCourt)
 module.exports = adminService

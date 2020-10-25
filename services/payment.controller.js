@@ -10,7 +10,6 @@ class PaymentService extends EventEmiter {
   
   createToken = async (req,res) => {
     try {
-      console.log("executed endpoint")
       let credit_info = {
         "card[number]": "4575623182290326",
         "card[exp_year]": "2025",
@@ -18,7 +17,6 @@ class PaymentService extends EventEmiter {
         "card[cvc]": "123"
       }
       let token = await epayco.token.create(credit_info)
-      console.log(token)
       let customer_info = {
         token_card: "zP4qNGzMoqfAEaiks",
         name: "Donaldo",
@@ -31,7 +29,6 @@ class PaymentService extends EventEmiter {
         cell_phone: "3023094339"    
       }
       let customer = await epayco.customers.create(customer_info)
-      console.log(customer)
       res.status(201).json({token, customer})
     } catch (err){
       res.status(400).json(err)
@@ -74,7 +71,6 @@ class PaymentService extends EventEmiter {
         }
       };
       const payment = await epayco.charge.create(payment_info)
-      console.log(payment)
       res.status(200).json({payment})
     } catch(err){
       res.status(400).json(err.message)  

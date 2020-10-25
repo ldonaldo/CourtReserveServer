@@ -5,13 +5,23 @@ const courtSubscribers = require("../subscribers/court.subscribers")
 class CourtService extends EventEmiter {
   createNewCourt = async (req ,res) => {    
     try{
-      const courtData = (({title, address, pricePerHour, openingTime, closingTime, adminId}) => ({title, address, pricePerHour, openingTime, closingTime, adminId}))(req.body)
+      const courtData = (({title, address, pricePerHour, openingTime, closingTime, adminId, courtPhotos}) => ({title, address, pricePerHour, openingTime, closingTime, adminId, courtPhotos}))(req.body)
       const court = await new Court(courtData)
       court.adminId = req.person._id
       this.emit("courtCreated", court)
       await court.save()      
       res.status(201).json({court})
     }catch(err){
+      res.status(400).json(err.message)
+    }
+  }
+  updateCourt = async (req,res) => {
+    try {
+      const {courtId, fields} = req.body;
+      const {title, address, pricePerHour, courtPhotos} = fields
+      const updatedCourt =  await Court.updateOne({_id: courtId},{title, address, pricePerHour, courtPhotos})
+      res.status(200).json(updateCourt)
+    } catch(err){
       res.status(400).json(err.message)
     }
   }
@@ -22,6 +32,15 @@ class CourtService extends EventEmiter {
     } catch(err){
       res.status(400).json(err.message)
     }   
+  }
+  getCourtsByUser = async (req,res) => {
+    try {
+      const { _id } = req.person
+      const courts = await Court.find({adminId: _id })
+      res.status(200).json({courts})
+    } catch(err){
+      res.status(400).json(err.message)  
+    }
   }
 }
 

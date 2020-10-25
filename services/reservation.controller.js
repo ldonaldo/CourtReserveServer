@@ -1,5 +1,4 @@
 const EventEmiter = require("events");
-const ReservationSubscribers = require("../subscribers/reservation.subscribers")
 const Reservation = require("../models/reservation.model");
 const reservationSubscribers = require("../subscribers/reservation.subscribers");
 
@@ -7,7 +6,6 @@ class ReservationService extends EventEmiter {
   createNewReservation = async (req,res) => {
     try {
       const reservationData = (({courtId, date, startTime, endTime, month, year, paidReserve, status, totalPrice}) => ({courtId, date, startTime, endTime, month, year, paidReserve, status, totalPrice}))(req.body)
-      console.log(reservationData)
       const reservation = await new Reservation(reservationData)
       reservation.userId = req.person._id
       this.emit("reservationCreated", reservation)
@@ -31,6 +29,15 @@ class ReservationService extends EventEmiter {
     try {
       const {courtId, year} = req.query
       const reservations = await Reservation.find({courtId: courtId, year: year})
+      res.status(200).json({reservations})
+    } catch(err){
+      res.status(400).json(err.message)
+    }   
+  }
+  getReservationsByUser = async (req,res) => {
+    try {
+      const userId = req.person._id
+      const reservations = await Reservation.find({userId: userId}).sort('-year -month').populate("courtId",["title","address"]).populate("userId",["name"])
       res.status(200).json({reservations})
     } catch(err){
       res.status(400).json(err.message)

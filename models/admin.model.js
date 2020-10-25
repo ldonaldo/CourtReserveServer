@@ -7,8 +7,7 @@ const adminSchema = new Schema ({
   name:{
       type: String,
       required: true,
-      trim: true,
-      uppercase: true
+      trim: true
   },
   email:{
       type: String,

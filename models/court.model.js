@@ -29,6 +29,9 @@ const courtSchema = new Schema ({
   reservations:{
     type: [{type: Schema.Types.ObjectId, ref:"Reservation"}]
   },
+  courtPhotos: {
+    type: String
+  }
 },{
   timestamps: true
 })
